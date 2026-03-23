@@ -30,7 +30,16 @@ URL actual:
 Archivos principales:
 - public/index.html
 - public/styles.css
-- public/app.js
+- public/eventos.html
+- public/veterinarios.html
+- public/citas.html
+- public/reportes.html
+- public/donaciones.html
+- public/apadrinamiento.html
+- public/admin.html
+- public/js/firebase-client.js
+- public/js/site.js
+- public/js/forms.js
 
 Deploy manual Hosting:
 

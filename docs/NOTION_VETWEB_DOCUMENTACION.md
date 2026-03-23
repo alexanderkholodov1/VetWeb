@@ -26,17 +26,26 @@ Proyecto Firebase:
 - Archivos principales:
   - index.html
   - styles.css
-  - app.js
+  - eventos.html
+  - veterinarios.html
+  - citas.html
+  - reportes.html
+  - donaciones.html
+  - apadrinamiento.html
+  - admin.html
+  - js/firebase-client.js
+  - js/site.js
+  - js/forms.js
 - Funciones del frontend:
-  - Login y registro con Firebase Auth.
+  - Home publica enfocada a usuarios no tecnicos.
+  - Login y registro con Firebase Auth mediante modal.
   - Creacion inicial de perfil en coleccion usuarios.
   - Seleccion de rol inicial de registro: ciudadano, dueno, voluntario, donante.
-  - Formulario de reporte de abandono.
-  - Formulario de agendamiento de citas.
-  - Formulario de donacion/apadrinamiento.
+  - Flujos separados por pagina para reportes, citas, donacion y apadrinamiento.
+  - Portal staff separado en admin.html con validacion de rol.
   - Lectura de campanas activas.
   - Lectura de veterinarios disponibles.
-  - Registro visual de actividad en interfaz.
+  - Mensajes de interfaz amigables para publico general.
 
 ### 2.2 Backend
 - Carpeta: functions
@@ -138,7 +147,7 @@ Flujo CI/CD:
 
 ## 6. Variables y configuracion de frontend
 
-En app.js:
+En js/firebase-client.js:
 - API base por defecto:
   - https://southamerica-east1-vetweb-917b9.cloudfunctions.net/api
 - Soporte local:
@@ -199,10 +208,12 @@ Opcion B (import):
 ## 11. Changelog de trabajo realizado
 
 - Se reemplazo pagina default de Firebase por landing completa de VetWeb.
-- Se implementaron formularios funcionales para procesos clave.
+- Se rediseno la experiencia a arquitectura multipagina para publico no tecnico.
+- Se implementaron formularios funcionales por pagina para procesos clave.
 - Se conecto frontend con Auth y Firestore en cliente.
 - Se dejo puente de consumo API con token Bearer.
 - Se definieron y desplegaron reglas de Firestore por rol.
 - Se ajusto CI/CD para hosting estatico sin paso de build inexistente.
 - Se configuro target hosting para publicar especificamente en vetweb-ec.web.app.
 - Se reforzo gitignore para evitar incluir llaves adminsdk.
+- Se elimino app.js legacy y se separo logica en js/firebase-client.js, js/site.js y js/forms.js.
