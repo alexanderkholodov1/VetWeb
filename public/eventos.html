@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Eventos - Por un Amigo Fiel</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="/__/firebase/12.11.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+    <script defer src="js/firebase-client.js"></script>
+    <script defer src="js/site.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <a href="index.html" class="logo-link"><img src="assets/favicon.svg" class="logo-icon" alt="Logo" /><span>Por un Amigo Fiel</span></a>
+      <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="eventos.html" class="active">Eventos</a>
+        <a href="veterinarios.html">Veterinarios</a>
+        <a href="citas.html">Agendar cita</a>
+        <a href="reportes.html">Reportar caso</a>
+        <a href="donaciones.html">Donar</a>
+      </nav>
+      <div class="header-actions">
+        <span id="session-badge" class="muted">Sin sesión</span>
+        <button id="open-auth-modal" class="btn btn-primary" type="button">Ingresar</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-heading">
+        <p class="kicker">Comunidad activa</p>
+        <h1>Próximos eventos y campañas</h1>
+        <p class="muted">Participa en jornadas de salud, caminatas y actividades educativas para mejorar el bienestar animal en Pillaro.</p>
+      </section>
+
+      <section class="section-block">
+        <div class="cards-2">
+          <article class="feature-card">
+            <h3>Perróton solidaria 2.5K</h3>
+            <p>Domingo 30 de marzo, 08:00 · Parque Central</p>
+            <p class="muted">Inscripción gratuita. Lleva correa, hidratación y funda de desechos.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Campaña masiva de esterilización</h3>
+            <p>Sábado 6 de abril, 09:00 · Coliseo Municipal</p>
+            <p class="muted">Cupos limitados por orden de registro previo.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Taller para familias y niños</h3>
+            <p>Miércoles 10 de abril, 17:00 · Casa Comunal</p>
+            <p class="muted">Tema: Tenencia responsable y prevención del abandono.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Feria de adopción responsable</h3>
+            <p>Domingo 14 de abril, 10:00 · Plaza Cívica</p>
+            <p class="muted">Conoce casos recuperados y proceso de adopción guiada.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer"><p>Conoce todos los eventos y súmate como voluntario en cada jornada.</p></footer>
+
+    <div id="auth-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <button type="button" class="modal-close" data-close-modal="true" aria-label="Cerrar">×</button>
+        <h2 id="auth-modal-title">Ingresar a tu cuenta</h2>
+        <form id="auth-form" class="form-stack">
+          <label>Correo electrónico<input type="email" name="email" required /></label>
+          <label>Contraseña<input type="password" name="password" minlength="6" required /></label>
+          <label>Tipo de cuenta al registrarte<select name="rolRegistro"><option value="ciudadano">Ciudadano</option><option value="dueno">Dueño de mascota</option><option value="voluntario">Voluntario</option><option value="donante">Donante</option></select></label>
+          <div class="row-buttons"><button type="submit" data-auth-action="login" class="btn btn-primary">Ingresar</button><button type="submit" data-auth-action="register" class="btn btn-soft">Crear cuenta</button></div>
+          <button id="logout-button" type="button" class="btn btn-ghost full">Cerrar sesión</button>
+          <p id="auth-feedback" class="feedback"></p>
+        </form>
+      </section>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Donar - Por un Amigo Fiel</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="/__/firebase/12.11.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+    <script defer src="js/firebase-client.js"></script>
+    <script defer src="js/site.js"></script>
+    <script defer src="js/forms.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <a href="index.html" class="logo-link"><img src="assets/favicon.svg" class="logo-icon" alt="Logo" /><span>Por un Amigo Fiel</span></a>
+      <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="eventos.html">Eventos</a>
+        <a href="veterinarios.html">Veterinarios</a>
+        <a href="citas.html">Agendar cita</a>
+        <a href="reportes.html">Reportar caso</a>
+        <a href="donaciones.html" class="active">Donar</a>
+      </nav>
+      <div class="header-actions">
+        <span id="session-badge" class="muted">Sin sesión</span>
+        <button id="open-auth-modal" class="btn btn-primary" type="button">Ingresar</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-heading">
+        <p class="kicker">Apoyo solidario</p>
+        <h1>Tu ayuda se convierte en alimento, medicina y rescate</h1>
+        <p class="muted">Escoge una forma de apoyo. El proceso de pago se maneja de forma segura.</p>
+      </section>
+
+      <section class="section-block">
+        <div class="cards-2">
+          <article class="form-card">
+            <h3>Donación puntual</h3>
+            <form id="donacion-form" class="form-stack">
+              <label>Monto en USD<input name="monto" type="number" min="1" step="0.01" required /></label>
+              <button type="submit" class="btn btn-primary">Continuar con donación</button>
+              <p id="donacion-feedback" class="feedback"></p>
+            </form>
+          </article>
+
+          <article class="form-card">
+            <h3>Apadrinamiento mensual</h3>
+            <p class="muted">Apadrina un caso y apoya su alimentación, vacunas y seguimiento.</p>
+            <a href="apadrinamiento.html" class="btn btn-secondary">Ir a apadrinamiento</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer"><p>Gracias por apoyar una ciudad más compasiva con los animales.</p></footer>
+
+    <div id="auth-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <button type="button" class="modal-close" data-close-modal="true" aria-label="Cerrar">×</button>
+        <h2 id="auth-modal-title">Ingresar a tu cuenta</h2>
+        <form id="auth-form" class="form-stack">
+          <label>Correo electrónico<input type="email" name="email" required /></label>
+          <label>Contraseña<input type="password" name="password" minlength="6" required /></label>
+          <label>Tipo de cuenta al registrarte<select name="rolRegistro"><option value="ciudadano">Ciudadano</option><option value="dueno">Dueño de mascota</option><option value="voluntario">Voluntario</option><option value="donante">Donante</option></select></label>
+          <div class="row-buttons"><button type="submit" data-auth-action="login" class="btn btn-primary">Ingresar</button><button type="submit" data-auth-action="register" class="btn btn-soft">Crear cuenta</button></div>
+          <button id="logout-button" type="button" class="btn btn-ghost full">Cerrar sesión</button>
+          <p id="auth-feedback" class="feedback"></p>
+        </form>
+      </section>
+    </div>
+  </body>
+</html>

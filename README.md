@@ -1,82 +1,77 @@
-# Backend Sistema de Rescate y Gestion de Mascotas
+# VetWeb - Plataforma Veterinaria y Rescate
 
-Backend en Node.js + Firebase Cloud Functions v2 + Firestore con arquitectura monolitica Express en un unico entry point (`api`).
+Proyecto web para POR UN AMIGO FIEL - PILLARO, desplegado en Firebase.
+
+URL actual:
+- https://vetweb-ec.web.app
+
+## Stack
+
+- Frontend estatico: HTML, CSS, JavaScript en public
+- Backend API: Firebase Cloud Functions v2 + Express en functions
+- Base de datos: Firestore
+- Auth: Firebase Authentication
+- CI/CD Hosting: GitHub Actions
+
+## Documentacion completa
+
+- Documento principal para Notion: docs/NOTION_VETWEB_DOCUMENTACION.md
+- Checklist de entrega: docs/CHECKLIST_ENTREGA.md
+- Guia para importar en Notion: docs/GUIA_NOTION.md
 
 ## Requisitos
 
 - Node.js 20
-- Firebase CLI (`npm i -g firebase-tools`)
-- Proyecto Firebase configurado
+- Firebase CLI (npm i -g firebase-tools)
+- Proyecto Firebase vetweb-917b9
 
-## Instalacion
+## Frontend
 
-```bash
+Archivos principales:
+- public/index.html
+- public/styles.css
+- public/app.js
+
+Deploy manual Hosting:
+
+firebase deploy --only hosting --project vetweb-917b9
+
+## Backend
+
+Instalacion:
+
 cd functions
 npm install
-```
 
-## Variables de entorno
+Build:
 
-No se requieren variables extra para el mock actual de pagos. Para emulador local, autentica Firebase CLI:
-
-```bash
-firebase login
-firebase use <tu-proyecto>
-```
-
-## Ejecutar en local (Emulator Suite)
-
-Desde la raiz del proyecto (donde esta `firebase.json` si lo agregas):
-
-```bash
-cd functions
 npm run build
-npm run serve
-```
 
-## Scripts utiles
+Deploy functions:
 
-- `npm run build`: compila TypeScript a `lib/`
-- `npm run lint`: ejecuta ESLint sobre `src/**/*.ts`
-- `npm run deploy:auto`: compila y despliega Functions automaticamente
-- `npm run clean`: elimina carpeta `lib/`
+firebase deploy --only functions --project vetweb-917b9 --config functions/firebase.json
 
-## Despliegue automatico
+Deploy reglas de Firestore:
 
-Este script de despliegue automatico soporta solo Linux.
+firebase deploy --only firestore:rules --project vetweb-917b9 --config functions/firebase.json
 
-Desde la raiz del workspace:
+## Roles
 
-```bash
-./deploy-functions.sh
-```
+Roles del sistema:
+- ciudadano
+- dueno
+- voluntario
+- donante
+- veterinario
+- administrador
 
-Opcionalmente puedes indicar proyecto:
+Reglas por rol definidas en:
+- functions/firestore.rules
 
-```bash
-./deploy-functions.sh <firebase-project-id>
-```
+## Seguridad
 
-Tambien puedes usar el script desde `functions/`:
+- Se ignoran llaves de service account en git con la regla:
+	- *firebase-adminsdk*.json
 
-```bash
-npm run deploy:auto -- <firebase-project-id>
-```
-
-## Estructura principal
-
-- `src/index.ts`: Cloud Function v2 `api`
-- `src/app.ts`: instancia de Express y montaje de routers
-- `src/middleware`: autenticacion y manejo global de errores
-- `src/modules`: modulos por dominio (rescate, veterinaria, donaciones, administracion, comunidad)
-- `src/shared`: wrappers para Firestore, FCM, pagos mock y utilidades
-
-## Autenticacion y autorizacion
-
-Todos los endpoints requieren `Authorization: Bearer <token>` valido de Firebase Auth.
-El rol se resuelve desde la coleccion `usuarios` y se valida con `requireRole(...)`.
-
-## Nota de pagos
-
-`src/shared/payment.service.ts` usa una implementacion mock (90% de exito).
-Ese servicio esta preparado para reemplazar internamente la llamada por Stripe o MercadoPago sin modificar la logica de negocio de los modulos.
+Recomendacion:
+- Rotar cualquier service account key que haya sido compartida fuera de un canal seguro.

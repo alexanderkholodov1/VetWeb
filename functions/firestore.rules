@@ -1,0 +1,138 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDocPath(uid) {
+      return /databases/$(database)/documents/usuarios/$(uid);
+    }
+
+    function currentRole() {
+      return isSignedIn() && exists(userDocPath(request.auth.uid))
+        ? get(userDocPath(request.auth.uid)).data.rol
+        : null;
+    }
+
+    function hasRole(roles) {
+      return isSignedIn() && currentRole() in roles;
+    }
+
+    function isAdmin() {
+      return hasRole(["administrador"]);
+    }
+
+    function isVetStaff() {
+      return hasRole(["veterinario", "administrador"]);
+    }
+
+    function isCommunityUser() {
+      return hasRole(["ciudadano", "dueno", "voluntario", "donante", "veterinario", "administrador"]);
+    }
+
+    function isDonorLike() {
+      return hasRole(["donante", "ciudadano", "dueno", "administrador"]);
+    }
+
+    match /usuarios/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+
+      // Registro inicial de perfil; se bloquea auto-asignacion de roles privilegiados.
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          "rol",
+          "email",
+          "nombre",
+          "telefono",
+          "sector",
+          "fcmToken",
+          "fotoUrl",
+          "creadoEn"
+        ])
+        && request.resource.data.rol in ["ciudadano", "dueno", "voluntario", "donante"]
+        && request.resource.data.email is string;
+
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        (
+          request.auth.uid == uid
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            "nombre",
+            "telefono",
+            "sector",
+            "fcmToken",
+            "fotoUrl"
+          ])
+          && request.resource.data.rol == resource.data.rol
+          && request.resource.data.email == resource.data.email
+        )
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /campanas/{campanaId} {
+      allow read: if isCommunityUser();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /inscripciones/{inscripcionId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.usuarioUid == request.auth.uid);
+      allow create: if isCommunityUser()
+        && isSignedIn()
+        && request.resource.data.usuarioUid == request.auth.uid
+        && request.resource.data.keys().hasOnly(["campanaId", "usuarioUid", "creadoEn"]);
+      allow update, delete: if isAdmin();
+    }
+
+    match /reportes/{reporteId} {
+      allow create: if hasRole(["ciudadano", "dueno", "voluntario", "administrador"])
+        && request.resource.data.reportadoPorUid == request.auth.uid;
+      allow read: if isAdmin() || hasRole(["voluntario"]) || (isSignedIn() && resource.data.reportadoPorUid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /mascotas/{mascotaId} {
+      allow create: if hasRole(["dueno", "administrador"]) && request.resource.data.duenioUid == request.auth.uid;
+      allow read: if isVetStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
+      allow update, delete: if isVetStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
+    }
+
+    match /citas/{citaId} {
+      allow create: if hasRole(["dueno", "administrador"]) && request.resource.data.duenioUid == request.auth.uid;
+      allow read: if isVetStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
+      allow update, delete: if isVetStaff();
+    }
+
+    match /atencionesmedicas/{atencionId} {
+      allow create, update, delete: if isVetStaff();
+      allow read: if isVetStaff() || (
+        isSignedIn()
+        && exists(/databases/$(database)/documents/mascotas/$(resource.data.mascotaId))
+        && get(/databases/$(database)/documents/mascotas/$(resource.data.mascotaId)).data.duenioUid == request.auth.uid
+      );
+    }
+
+    match /donaciones/{donacionId} {
+      allow create: if isDonorLike() && request.resource.data.donorUid == request.auth.uid;
+      allow read: if isAdmin() || (isSignedIn() && resource.data.donorUid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /apadrinamientos/{apadrinamientoId} {
+      allow create: if isDonorLike() && request.resource.data.padrinoUid == request.auth.uid;
+      allow read: if isAdmin() || (isSignedIn() && resource.data.padrinoUid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /suministros/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
