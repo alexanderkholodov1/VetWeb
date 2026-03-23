@@ -1,16 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="VetWeb">
-  <defs>
-    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#f97316"/>
-      <stop offset="100%" stop-color="#0f766e"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
-  <g fill="#fff">
-    <circle cx="21" cy="20" r="6"/>
-    <circle cx="43" cy="20" r="6"/>
-    <circle cx="16" cy="32" r="5"/>
-    <circle cx="48" cy="32" r="5"/>
-    <path d="M32 46c7 0 13-4 13-10 0-4-2-7-5-8-2 4-5 6-8 6s-6-2-8-6c-3 1-5 4-5 8 0 6 6 10 13 10z"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Por un Amigo Fiel - Favicon">
+	<rect width="120" height="120" rx="24" fill="#FFF8EF" />
+	<g transform="translate(12, 12) scale(0.8)">
+		<path d="M 60 112 C 60 112 12 90 12 45 V 20 L 60 6 L 108 20 V 45 C 108 90 60 112 60 112 Z" fill="#0F766E" />
+		<path d="M 60 92 C 60 92 28 65 28 42 C 28 25 48 20 60 38 C 72 20 92 25 92 42 C 92 65 60 92 60 92 Z" fill="#ED5C21" />
+		<path d="M 53 41 h 14 v 12 h 12 v 14 h -12 v 12 h -14 v -12 h -12 v -14 h 12 z" fill="#FFF8EF" />
+	</g>
 </svg>
