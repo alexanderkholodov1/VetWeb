@@ -15,13 +15,33 @@ function requireSession(feedbackId) {
   return true;
 }
 
+function normalizeRole(role) {
+  const value = String(role || "").toLowerCase();
+
+  if (value === "admin" || value === "administrador") {
+    return "admin";
+  }
+
+  if (value === "staff" || value === "veterinario" || value === "voluntario") {
+    return "staff";
+  }
+
+  return "user";
+}
+
+function hasAnyRole(role, allowedRoles) {
+  const normalizedRole = normalizeRole(role);
+  const normalizedAllowed = allowedRoles.map((item) => normalizeRole(item));
+  return normalizedAllowed.includes(normalizedRole);
+}
+
 function requireRole(allowedRoles, feedbackId) {
   if (!requireSession(feedbackId)) {
     return false;
   }
 
   const role = window.VetWebAuth?.state?.currentRole;
-  if (!allowedRoles.includes(role)) {
+  if (!hasAnyRole(role, allowedRoles)) {
     showPageFeedback(feedbackId, "Tu tipo de cuenta no tiene permiso para esta accion.", true);
     return false;
   }
@@ -65,7 +85,7 @@ function bindCitaForm() {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!requireRole(["dueno", "administrador"], "cita-feedback")) {
+    if (!requireRole(["user", "admin"], "cita-feedback")) {
       return;
     }
 
@@ -309,7 +329,7 @@ function bindClientPortal() {
   if (petForm) {
     petForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!requireRole(["dueno", "administrador"], "client-portal-feedback")) {
+      if (!requireRole(["user", "admin"], "client-portal-feedback")) {
         return;
       }
 
@@ -365,7 +385,7 @@ function bindClientPortal() {
       return;
     }
 
-    if (!["dueno", "ciudadano", "donante", "administrador"].includes(role)) {
+    if (!hasAnyRole(role, ["user", "admin"])) {
       if (guard) {
         guard.textContent = "Tu cuenta no corresponde al portal de cliente. Usa tu portal de staff.";
         guard.classList.remove("hidden");
@@ -435,7 +455,7 @@ function bindStaffPortal() {
   if (disponibilidadForm) {
     disponibilidadForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!requireRole(["veterinario", "voluntario", "administrador"], "staff-feedback")) {
+      if (!requireRole(["staff", "admin"], "staff-feedback")) {
         return;
       }
 
@@ -460,7 +480,7 @@ function bindStaffPortal() {
   if (suministroForm) {
     suministroForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!requireRole(["veterinario", "voluntario", "administrador"], "staff-feedback")) {
+      if (!requireRole(["staff", "admin"], "staff-feedback")) {
         return;
       }
 
@@ -485,7 +505,7 @@ function bindStaffPortal() {
   if (ubicacionForm) {
     ubicacionForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!requireRole(["veterinario", "administrador"], "staff-feedback")) {
+      if (!requireRole(["staff", "admin"], "staff-feedback")) {
         return;
       }
 
@@ -519,7 +539,7 @@ function bindStaffPortal() {
       return;
     }
 
-    if (!["veterinario", "voluntario", "administrador"].includes(role)) {
+    if (!hasAnyRole(role, ["staff", "admin"])) {
       if (guard) {
         guard.textContent = "Tu cuenta no tiene permisos para el portal de staff.";
         guard.classList.remove("hidden");
@@ -596,7 +616,7 @@ function bindAdminView() {
   if (rolesForm) {
     rolesForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!requireRole(["administrador"], "admin-feedback")) {
+      if (!requireRole(["admin"], "admin-feedback")) {
         return;
       }
 
@@ -629,7 +649,7 @@ function bindAdminView() {
       return;
     }
 
-    if (role !== "administrador") {
+    if (!hasAnyRole(role, ["admin"])) {
       guard.textContent = "Tu cuenta no tiene permisos de administracion.";
       panel.classList.add("hidden");
       return;

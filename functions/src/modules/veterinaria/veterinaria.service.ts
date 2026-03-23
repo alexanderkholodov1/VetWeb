@@ -44,7 +44,7 @@ export class VeterinariaService {
     }
 
     const mascota = mascotaDoc.data()!;
-    if (requesterRole === "dueno" && mascota.duenioUid !== requesterUid) {
+    if ((requesterRole === "dueno" || requesterRole === "user") && mascota.duenioUid !== requesterUid) {
       throw new AppError("No tiene permisos para ver este historial", 403);
     }
 

@@ -1,4 +1,7 @@
 export type UserRole =
+  | "user"
+  | "staff"
+  | "admin"
   | "ciudadano"
   | "dueno"
   | "veterinario"

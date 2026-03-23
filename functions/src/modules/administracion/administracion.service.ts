@@ -3,7 +3,17 @@ import { db } from "../../shared/firestore";
 import { AppError } from "../../middleware/error.middleware";
 import { UserRole } from "./administracion.types";
 
-const ROLES_VALIDOS: UserRole[] = ["ciudadano", "dueno", "veterinario", "voluntario", "administrador", "donante"];
+const ROLES_VALIDOS: UserRole[] = [
+  "user",
+  "staff",
+  "admin",
+  "ciudadano",
+  "dueno",
+  "veterinario",
+  "voluntario",
+  "administrador",
+  "donante"
+];
 
 export class AdministracionService {
   async listarUsuarios(rol?: string) {

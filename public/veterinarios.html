@@ -74,8 +74,7 @@
         <form id="auth-form" class="form-stack">
           <label>Correo electrónico<input type="email" name="email" required /></label>
           <label>Contraseña<input type="password" name="password" minlength="6" required /></label>
-          <label>Tipo de cuenta al registrarte<select name="rolRegistro"><option value="ciudadano">Ciudadano</option><option value="dueno">Dueño de mascota</option><option value="voluntario">Voluntario</option><option value="donante">Donante</option></select></label>
-          <div class="row-buttons"><button type="submit" data-auth-action="login" class="btn btn-primary">Ingresar</button><button type="submit" data-auth-action="register" class="btn btn-soft">Crear cuenta</button></div>
+          <div class="row-buttons auth-mode-row"><button type="button" data-auth-mode="login" class="btn btn-soft">Ya tengo cuenta</button><button type="button" data-auth-mode="register" class="btn btn-soft">Crear cuenta</button></div><button type="submit" id="auth-submit-button" class="btn btn-primary full">Ingresar</button>
           <button id="logout-button" type="button" class="btn btn-ghost full">Cerrar sesión</button>
           <p id="auth-feedback" class="feedback"></p>
         </form>

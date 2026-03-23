@@ -1,5 +1,19 @@
 const DEFAULT_API_BASE = "https://southamerica-east1-vetweb-917b9.cloudfunctions.net/api";
-const allowedPublicRoles = ["ciudadano", "dueno", "voluntario", "donante"];
+const allowedPublicRoles = ["user", "staff", "admin", "ciudadano", "dueno", "voluntario", "donante", "veterinario", "administrador"];
+
+function normalizeRole(role) {
+  const value = String(role || "").toLowerCase();
+
+  if (value === "admin" || value === "administrador") {
+    return "admin";
+  }
+
+  if (value === "staff" || value === "veterinario" || value === "voluntario") {
+    return "staff";
+  }
+
+  return "user";
+}
 
 const appState = {
   auth: null,
@@ -77,7 +91,7 @@ async function refreshCurrentRole() {
 
   const profile = await fetchUserProfile(appState.user.uid);
   appState.userProfile = profile;
-  appState.currentRole = profile?.rol || null;
+  appState.currentRole = normalizeRole(profile?.rol);
   return appState.currentRole;
 }
 
@@ -100,7 +114,7 @@ async function ensureUserProfile(user, role) {
     return;
   }
 
-  const safeRole = allowedPublicRoles.includes(role) ? role : "ciudadano";
+  const safeRole = allowedPublicRoles.includes(role) ? normalizeRole(role) : "user";
   const ref = appState.db.collection("usuarios").doc(user.uid);
   const snapshot = await ref.get();
 
@@ -209,10 +223,11 @@ async function logoutUser() {
 }
 
 function getPortalPathByRole(role) {
-  if (role === "administrador") {
+  const normalizedRole = normalizeRole(role);
+  if (normalizedRole === "admin") {
     return "admin.html";
   }
-  if (role === "veterinario" || role === "voluntario") {
+  if (normalizedRole === "staff") {
     return "staff.html";
   }
   return "portal.html";

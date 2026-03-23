@@ -5,6 +5,24 @@ import { UserRole } from "../types/express";
 
 const BEARER_PREFIX = "Bearer ";
 
+const normalizeRole = (role?: UserRole): "user" | "staff" | "admin" | null => {
+  const value = String(role || "").toLowerCase();
+
+  if (value === "admin" || value === "administrador") {
+    return "admin";
+  }
+
+  if (value === "staff" || value === "veterinario" || value === "voluntario") {
+    return "staff";
+  }
+
+  if (value) {
+    return "user";
+  }
+
+  return null;
+};
+
 export const authenticate = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
   try {
     const header = req.headers.authorization;
@@ -38,9 +56,10 @@ export const authenticate = async (req: Request, _res: Response, next: NextFunct
 
 export const requireRole = (...roles: UserRole[]) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
-    const role = req.user?.role;
+    const role = normalizeRole(req.user?.role);
+    const allowed = roles.map((item) => normalizeRole(item));
 
-    if (!role || !roles.includes(role)) {
+    if (!role || !allowed.includes(role)) {
       next(new AppError("No tiene permisos para este recurso", 403));
       return;
     }

@@ -9,11 +9,33 @@ function bindAuthModal() {
   }
 
   let selectedAction = "login";
-  form.querySelectorAll("[data-auth-action]").forEach((button) => {
+  const submitButton = form.querySelector("#auth-submit-button");
+  const modeButtons = form.querySelectorAll("[data-auth-mode]");
+
+  const updateAuthModeUi = () => {
+    modeButtons.forEach((button) => {
+      const mode = button.dataset.authMode || "login";
+      if (mode === selectedAction) {
+        button.classList.remove("btn-soft");
+        button.classList.add("btn-primary");
+      } else {
+        button.classList.remove("btn-primary");
+        button.classList.add("btn-soft");
+      }
+    });
+
+    if (submitButton) {
+      submitButton.textContent = selectedAction === "register" ? "Crear cuenta" : "Ingresar";
+    }
+  };
+
+  modeButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      selectedAction = button.dataset.authAction || "login";
+      selectedAction = button.dataset.authMode || "login";
+      updateAuthModeUi();
     });
   });
+  updateAuthModeUi();
 
   function openModal() {
     modal.classList.remove("hidden");
@@ -47,8 +69,6 @@ function bindAuthModal() {
     const data = new FormData(form);
     const email = String(data.get("email") || "").trim();
     const password = String(data.get("password") || "");
-    const role = String(data.get("rolRegistro") || "ciudadano");
-
     if (!email || !password) {
       window.VetWebAuth.setFeedback("Completa tu correo y contrasena.", true);
       return;
@@ -56,7 +76,7 @@ function bindAuthModal() {
 
     try {
       if (selectedAction === "register") {
-        await window.VetWebAuth.registerWithEmail(email, password, role);
+        await window.VetWebAuth.registerWithEmail(email, password, "user");
         window.VetWebAuth.setFeedback("Tu cuenta fue creada con exito.");
       } else {
         await window.VetWebAuth.loginWithEmail(email, password);

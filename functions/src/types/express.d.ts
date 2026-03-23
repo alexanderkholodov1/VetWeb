@@ -1,6 +1,9 @@
 import { DecodedIdToken } from "firebase-admin/auth";
 
 export type UserRole =
+  | "user"
+  | "staff"
+  | "admin"
   | "ciudadano"
   | "dueno"
   | "veterinario"
