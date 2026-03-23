@@ -378,6 +378,67 @@ textarea:focus {
   gap: 1rem;
 }
 
+.section-gap-top {
+  margin-top: 0.9rem;
+}
+
+.simple-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.simple-list li {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fffdf7;
+  padding: 0.65rem 0.75rem;
+}
+
+.event-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.event-grid li {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.metric-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fffdf9;
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.metric-card span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.metric-card strong {
+  font-size: 1.35rem;
+}
+
 @media (max-width: 1040px) {
   .header { grid-template-columns: 1fr; }
   .main-nav { justify-content: flex-start; }
@@ -386,5 +447,7 @@ textarea:focus {
   .cards-3,
   .cards-2,
   .profiles-grid,
-  .admin-layout { grid-template-columns: 1fr; }
+  .admin-layout,
+  .event-grid,
+  .metrics-grid { grid-template-columns: 1fr; }
 }

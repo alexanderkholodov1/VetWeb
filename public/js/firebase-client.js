@@ -1,12 +1,22 @@
 const DEFAULT_API_BASE = "https://southamerica-east1-vetweb-917b9.cloudfunctions.net/api";
+const allowedPublicRoles = ["ciudadano", "dueno", "voluntario", "donante"];
 
 const appState = {
   auth: null,
   db: null,
   user: null,
+  userProfile: null,
   apiBase: DEFAULT_API_BASE,
-  currentRole: null
+  currentRole: null,
+  initialized: false
 };
+
+const authSubscribers = [];
+let initPromise = null;
+let authReadyResolver = null;
+const authReady = new Promise((resolve) => {
+  authReadyResolver = resolve;
+});
 
 function isLocalHost() {
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
@@ -28,8 +38,22 @@ function setFeedback(message, isError = false) {
   feedback.classList.toggle("error", isError);
 }
 
-async function fetchCurrentRole(uid) {
-  if (!appState.db) {
+function translateAuthError(error) {
+  const code = error?.code || "";
+  const map = {
+    "auth/invalid-email": "El correo no es valido.",
+    "auth/user-disabled": "Esta cuenta se encuentra deshabilitada.",
+    "auth/user-not-found": "No encontramos una cuenta con ese correo.",
+    "auth/wrong-password": "La contrasena no coincide.",
+    "auth/email-already-in-use": "Este correo ya tiene una cuenta.",
+    "auth/weak-password": "La contrasena debe tener al menos 6 caracteres.",
+    "auth/too-many-requests": "Demasiados intentos. Espera unos minutos e intentalo otra vez."
+  };
+  return map[code] || "No pudimos completar la accion. Intentalo nuevamente.";
+}
+
+async function fetchUserProfile(uid) {
+  if (!appState.db || !uid) {
     return null;
   }
 
@@ -38,21 +62,45 @@ async function fetchCurrentRole(uid) {
     if (!profile.exists) {
       return null;
     }
-    const data = profile.data();
-    return data?.rol || null;
+    return profile.data() || null;
   } catch (_error) {
     return null;
   }
 }
 
-async function ensureUserProfile(user, role) {
-  const allowedRoles = ["ciudadano", "dueno", "voluntario", "donante"];
-  const safeRole = allowedRoles.includes(role) ? role : "ciudadano";
+async function refreshCurrentRole() {
+  if (!appState.user) {
+    appState.userProfile = null;
+    appState.currentRole = null;
+    return null;
+  }
 
+  const profile = await fetchUserProfile(appState.user.uid);
+  appState.userProfile = profile;
+  appState.currentRole = profile?.rol || null;
+  return appState.currentRole;
+}
+
+function renderSessionBadge() {
+  const badge = document.getElementById("session-badge");
+  if (!badge) {
+    return;
+  }
+
+  if (appState.user) {
+    const role = appState.currentRole ? ` · ${appState.currentRole}` : "";
+    badge.textContent = `${appState.user.email}${role}`;
+  } else {
+    badge.textContent = "Sin sesion";
+  }
+}
+
+async function ensureUserProfile(user, role) {
   if (!appState.db) {
     return;
   }
 
+  const safeRole = allowedPublicRoles.includes(role) ? role : "ciudadano";
   const ref = appState.db.collection("usuarios").doc(user.uid);
   const snapshot = await ref.get();
 
@@ -68,7 +116,41 @@ async function ensureUserProfile(user, role) {
     sector: "",
     fcmToken: "",
     fotoUrl: user.photoURL || "",
+    veterinarioFavoritoUid: "",
     creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+async function updateMyProfile(fields) {
+  if (!appState.db || !appState.user) {
+    throw new Error("Necesitas iniciar sesion para actualizar tu perfil.");
+  }
+
+  await appState.db.collection("usuarios").doc(appState.user.uid).update(fields);
+  await refreshCurrentRole();
+  renderSessionBadge();
+}
+
+function onAuthChanged(listener) {
+  if (typeof listener !== "function") {
+    return () => undefined;
+  }
+  authSubscribers.push(listener);
+  return () => {
+    const index = authSubscribers.indexOf(listener);
+    if (index >= 0) {
+      authSubscribers.splice(index, 1);
+    }
+  };
+}
+
+function notifyAuthSubscribers() {
+  authSubscribers.forEach((listener) => {
+    try {
+      listener(appState);
+    } catch (_error) {
+      // Ignore listener errors to avoid breaking auth flow.
+    }
   });
 }
 
@@ -79,19 +161,19 @@ async function getIdToken() {
   return appState.user.getIdToken();
 }
 
-async function postToApi(path, payload) {
+async function postToApi(path, payload, method = "POST") {
   const token = await getIdToken();
   if (!token) {
-    throw new Error("Necesitas iniciar sesión para continuar.");
+    throw new Error("Necesitas iniciar sesion para continuar.");
   }
 
   const response = await fetch(`${appState.apiBase}${path}`, {
-    method: "POST",
+    method,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify(payload)
+    body: method === "GET" ? undefined : JSON.stringify(payload || {})
   });
 
   const json = await response.json().catch(() => ({}));
@@ -105,11 +187,18 @@ async function postToApi(path, payload) {
 async function registerWithEmail(email, password, role) {
   const credential = await appState.auth.createUserWithEmailAndPassword(email, password);
   await ensureUserProfile(credential.user, role);
+  await refreshCurrentRole();
+  renderSessionBadge();
+  notifyAuthSubscribers();
   return credential;
 }
 
 async function loginWithEmail(email, password) {
-  return appState.auth.signInWithEmailAndPassword(email, password);
+  const credential = await appState.auth.signInWithEmailAndPassword(email, password);
+  await refreshCurrentRole();
+  renderSessionBadge();
+  notifyAuthSubscribers();
+  return credential;
 }
 
 async function logoutUser() {
@@ -119,9 +208,25 @@ async function logoutUser() {
   await appState.auth.signOut();
 }
 
-function initFirebaseClient() {
+function getPortalPathByRole(role) {
+  if (role === "administrador") {
+    return "admin.html";
+  }
+  if (role === "veterinario" || role === "voluntario") {
+    return "staff.html";
+  }
+  return "portal.html";
+}
+
+async function waitForFirebaseAndInit() {
+  let attempts = 0;
+  while (!window.firebase && attempts < 60) {
+    attempts += 1;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
   if (!window.firebase) {
-    return;
+    throw new Error("Firebase no cargo correctamente.");
   }
 
   appState.apiBase = getApiBase();
@@ -130,25 +235,46 @@ function initFirebaseClient() {
 
   appState.auth.onAuthStateChanged(async (user) => {
     appState.user = user;
-    appState.currentRole = user ? await fetchCurrentRole(user.uid) : null;
+    await refreshCurrentRole();
+    renderSessionBadge();
+    notifyAuthSubscribers();
 
-    const badge = document.getElementById("session-badge");
-    if (badge) {
-      if (user) {
-        badge.textContent = `${user.email} ${appState.currentRole ? `· ${appState.currentRole}` : ""}`;
-      } else {
-        badge.textContent = "Sin sesión";
-      }
+    if (authReadyResolver) {
+      authReadyResolver(appState);
+      authReadyResolver = null;
     }
   });
+
+  appState.initialized = true;
+}
+
+function initFirebaseClient() {
+  if (appState.initialized && initPromise) {
+    return initPromise;
+  }
+
+  if (!initPromise) {
+    initPromise = waitForFirebaseAndInit().catch((error) => {
+      setFeedback("No pudimos cargar el sistema de cuentas en este momento.", true);
+      throw error;
+    });
+  }
+
+  return initPromise;
 }
 
 window.VetWebAuth = {
   state: appState,
   initFirebaseClient,
+  whenReady: () => authReady,
+  onAuthChanged,
+  getPortalPathByRole,
+  refreshCurrentRole,
+  updateMyProfile,
   postToApi,
   registerWithEmail,
   loginWithEmail,
   logoutUser,
+  translateAuthError,
   setFeedback
 };

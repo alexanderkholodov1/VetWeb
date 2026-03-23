@@ -141,6 +141,11 @@ Archivos clave:
 - .github/workflows/firebase-hosting-merge.yml
 - .github/workflows/firebase-hosting-pull-request.yml
 
+Aclaracion de estructura:
+- Se usa un unico firebase.json en la raiz del repositorio.
+- Desde ese archivo se configuran Hosting, Functions, Firestore rules y Emulators.
+- No se usa functions/firebase.json ni script deploy-functions.sh.
+
 Flujo CI/CD:
 - Push a main: deploy a canal live (sitio vetweb-ec).
 - Pull request: preview deployment sobre mismo target configurado.
@@ -167,7 +172,7 @@ En js/firebase-client.js:
    - firebase deploy --only hosting --project vetweb-917b9
 
 ### 7.3 Publicar cambios de reglas
-- firebase deploy --only firestore:rules --config functions/firebase.json --project vetweb-917b9
+- firebase deploy --only firestore:rules --project vetweb-917b9
 
 ## 8. Seguridad y cumplimiento
 

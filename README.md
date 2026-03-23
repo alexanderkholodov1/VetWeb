@@ -13,6 +13,18 @@ URL actual:
 - Auth: Firebase Authentication
 - CI/CD Hosting: GitHub Actions
 
+## Configuracion Firebase (unificada)
+
+- Archivo unico de configuracion: firebase.json (en la raiz)
+- Ese archivo contiene:
+	- Hosting (public)
+	- Functions (source: functions)
+	- Firestore rules (functions/firestore.rules)
+	- Emulators
+
+Nota:
+- Ya no se usa functions/firebase.json ni deploy-functions.sh.
+
 ## Documentacion completa
 
 - Documento principal para Notion: docs/NOTION_VETWEB_DOCUMENTACION.md
@@ -58,11 +70,11 @@ npm run build
 
 Deploy functions:
 
-firebase deploy --only functions --project vetweb-917b9 --config functions/firebase.json
+firebase deploy --only functions --project vetweb-917b9
 
 Deploy reglas de Firestore:
 
-firebase deploy --only firestore:rules --project vetweb-917b9 --config functions/firebase.json
+firebase deploy --only firestore:rules --project vetweb-917b9
 
 ## Roles
 

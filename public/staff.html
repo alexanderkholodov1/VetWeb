@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portal staff - Por un Amigo Fiel</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="/__/firebase/12.11.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+    <script defer src="js/firebase-client.js"></script>
+    <script defer src="js/site.js"></script>
+    <script defer src="js/forms.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <a href="index.html" class="logo-link"><img src="assets/favicon.svg" class="logo-icon" alt="Logo" /><span>Por un Amigo Fiel</span></a>
+      <nav class="main-nav">
+        <a href="index.html">Sitio publico</a>
+        <a href="portal.html">Portal cliente</a>
+        <a href="staff.html" class="active">Portal staff</a>
+        <a href="admin.html">Panel admin</a>
+      </nav>
+      <div class="header-actions">
+        <span id="session-badge" class="muted">Sin sesion</span>
+        <button id="open-auth-modal" class="btn btn-primary" type="button">Ingresar</button>
+      </div>
+    </header>
+
+    <main id="staff-portal-wrapper">
+      <section class="page-heading">
+        <p class="kicker">Portal operativo</p>
+        <h1>Herramientas para veterinarios y voluntarios</h1>
+        <p class="muted">Gestiona citas, clientes, disponibilidad, solicitudes y ubicacion de atencion.</p>
+      </section>
+
+      <section class="section-block">
+        <p id="staff-portal-guard" class="feedback">Inicia sesion para acceder al portal de staff.</p>
+
+        <div id="staff-portal-panel" class="hidden">
+          <div class="cards-2">
+            <article class="panel-card">
+              <h3>Citas agendadas</h3>
+              <ul id="staff-citas-list" class="simple-list"></ul>
+            </article>
+            <article class="panel-card">
+              <h3>Clientes y mascotas</h3>
+              <ul id="staff-clientes-list" class="simple-list"></ul>
+            </article>
+          </div>
+
+          <div class="cards-2 section-gap-top">
+            <article class="form-card">
+              <h3>Disponibilidad (libre/ocupado)</h3>
+              <form id="staff-disponibilidad-form" class="form-stack">
+                <label>Fecha<input type="date" name="fecha" required /></label>
+                <div class="cards-2">
+                  <label>Desde<input type="time" name="desde" required /></label>
+                  <label>Hasta<input type="time" name="hasta" required /></label>
+                </div>
+                <label>
+                  Estado
+                  <select name="estado">
+                    <option value="libre">Libre</option>
+                    <option value="ocupado">Ocupado</option>
+                  </select>
+                </label>
+                <button type="submit" class="btn btn-primary">Guardar disponibilidad</button>
+              </form>
+            </article>
+
+            <article class="form-card">
+              <h3>Solicitud de suministros</h3>
+              <form id="staff-suministro-form" class="form-stack">
+                <label>Item<input name="item" required /></label>
+                <label>Cantidad<input type="number" min="1" name="cantidad" required /></label>
+                <label>Detalle<textarea name="detalle" rows="3"></textarea></label>
+                <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+              </form>
+            </article>
+          </div>
+
+          <article class="form-card section-gap-top">
+            <h3>Ubicacion de consultorio (veterinario)</h3>
+            <form id="staff-ubicacion-form" class="form-stack">
+              <label>Nombre de consultorio<input name="consultorio" /></label>
+              <div class="cards-2">
+                <label>Latitud<input type="number" step="any" name="lat" /></label>
+                <label>Longitud<input type="number" step="any" name="lng" /></label>
+              </div>
+              <button type="submit" class="btn btn-primary">Actualizar ubicacion</button>
+            </form>
+          </article>
+
+          <p id="staff-feedback" class="feedback"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer"><p>Portal staff para coordinacion operativa diaria.</p></footer>
+
+    <div id="auth-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <button type="button" class="modal-close" data-close-modal="true" aria-label="Cerrar">x</button>
+        <h2 id="auth-modal-title">Ingresar a tu cuenta</h2>
+        <form id="auth-form" class="form-stack">
+          <label>Correo electronico<input type="email" name="email" required /></label>
+          <label>Contrasena<input type="password" name="password" minlength="6" required /></label>
+          <label>Tipo de cuenta al registrarte<select name="rolRegistro"><option value="ciudadano">Ciudadano</option><option value="dueno">Dueno de mascota</option><option value="voluntario">Voluntario</option><option value="donante">Donante</option></select></label>
+          <div class="row-buttons"><button type="submit" data-auth-action="login" class="btn btn-primary">Ingresar</button><button type="submit" data-auth-action="register" class="btn btn-soft">Crear cuenta</button></div>
+          <button id="logout-button" type="button" class="btn btn-ghost full">Cerrar sesion</button>
+          <p id="auth-feedback" class="feedback"></p>
+        </form>
+      </section>
+    </div>
+  </body>
+</html>

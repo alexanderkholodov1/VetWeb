@@ -44,7 +44,13 @@
       <section class="section-block">
         <article class="form-card">
           <form id="cita-form" class="form-stack">
-            <label>ID de mascota<input name="mascotaId" required /></label>
+            <label>
+              Mi mascota registrada
+              <select id="mascota-select">
+                <option value="">Selecciona una mascota</option>
+              </select>
+            </label>
+            <label>ID de mascota (si no aparece en la lista)<input name="mascotaId" /></label>
             <div class="cards-2">
               <label>Fecha<input type="date" name="fecha" required /></label>
               <label>Hora<input type="time" name="hora" required /></label>
@@ -52,6 +58,11 @@
             <button type="submit" class="btn btn-primary">Enviar solicitud</button>
             <p id="cita-feedback" class="feedback"></p>
           </form>
+        </article>
+
+        <article class="panel-card section-gap-top">
+          <h3>Tip para agendar mas rapido</h3>
+          <p class="muted">Si aun no tienes perfiles de mascotas, crea tus fichas en el <a href="portal.html">portal de cliente</a> y luego selecciona aqui con un clic.</p>
         </article>
       </section>
     </main>

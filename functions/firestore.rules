@@ -27,6 +27,10 @@ service cloud.firestore {
       return hasRole(["veterinario", "administrador"]);
     }
 
+    function isOpsStaff() {
+      return hasRole(["veterinario", "voluntario", "administrador"]);
+    }
+
     function isCommunityUser() {
       return hasRole(["ciudadano", "dueno", "voluntario", "donante", "veterinario", "administrador"]);
     }
@@ -36,7 +40,7 @@ service cloud.firestore {
     }
 
     match /usuarios/{uid} {
-      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin() || isOpsStaff());
 
       // Registro inicial de perfil; se bloquea auto-asignacion de roles privilegiados.
       allow create: if isSignedIn()
@@ -49,6 +53,7 @@ service cloud.firestore {
           "sector",
           "fcmToken",
           "fotoUrl",
+          "veterinarioFavoritoUid",
           "creadoEn"
         ])
         && request.resource.data.rol in ["ciudadano", "dueno", "voluntario", "donante"]
@@ -63,7 +68,8 @@ service cloud.firestore {
             "telefono",
             "sector",
             "fcmToken",
-            "fotoUrl"
+            "fotoUrl",
+            "veterinarioFavoritoUid"
           ])
           && request.resource.data.rol == resource.data.rol
           && request.resource.data.email == resource.data.email
@@ -79,7 +85,7 @@ service cloud.firestore {
     }
 
     match /inscripciones/{inscripcionId} {
-      allow read: if isAdmin() || (isSignedIn() && resource.data.usuarioUid == request.auth.uid);
+      allow read: if isAdmin() || isOpsStaff() || (isSignedIn() && resource.data.usuarioUid == request.auth.uid);
       allow create: if isCommunityUser()
         && isSignedIn()
         && request.resource.data.usuarioUid == request.auth.uid
@@ -96,23 +102,46 @@ service cloud.firestore {
 
     match /mascotas/{mascotaId} {
       allow create: if hasRole(["dueno", "administrador"]) && request.resource.data.duenioUid == request.auth.uid;
-      allow read: if isVetStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
+      allow read: if isOpsStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
       allow update, delete: if isVetStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
     }
 
     match /citas/{citaId} {
       allow create: if hasRole(["dueno", "administrador"]) && request.resource.data.duenioUid == request.auth.uid;
-      allow read: if isVetStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
-      allow update, delete: if isVetStaff();
+      allow read: if isOpsStaff() || (isSignedIn() && resource.data.duenioUid == request.auth.uid);
+      allow update, delete: if isOpsStaff();
     }
 
     match /atencionesmedicas/{atencionId} {
       allow create, update, delete: if isVetStaff();
-      allow read: if isVetStaff() || (
+      allow read: if isOpsStaff() || (
         isSignedIn()
         && exists(/databases/$(database)/documents/mascotas/$(resource.data.mascotaId))
         && get(/databases/$(database)/documents/mascotas/$(resource.data.mascotaId)).data.duenioUid == request.auth.uid
       );
+    }
+
+    match /veterinarios/{id} {
+      allow read: if isCommunityUser();
+      allow write: if isAdmin();
+    }
+
+    match /disponibilidadStaff/{id} {
+      allow read: if isCommunityUser();
+      allow create: if isOpsStaff() && request.resource.data.staffUid == request.auth.uid;
+      allow update, delete: if isAdmin() || (isOpsStaff() && resource.data.staffUid == request.auth.uid);
+    }
+
+    match /solicitudesSuministro/{id} {
+      allow create: if isOpsStaff() && request.resource.data.solicitanteUid == request.auth.uid;
+      allow read: if isAdmin() || isOpsStaff();
+      allow update, delete: if isAdmin() || (isOpsStaff() && resource.data.solicitanteUid == request.auth.uid);
+    }
+
+    match /ubicacionesVeterinarias/{id} {
+      allow read: if isCommunityUser();
+      allow create: if isVetStaff() && request.resource.data.veterinarioUid == request.auth.uid;
+      allow update, delete: if isAdmin() || (isVetStaff() && resource.data.veterinarioUid == request.auth.uid);
     }
 
     match /donaciones/{donacionId} {

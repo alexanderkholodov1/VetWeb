@@ -8,9 +8,20 @@ function bindAuthModal() {
     return;
   }
 
+  let selectedAction = "login";
+  form.querySelectorAll("[data-auth-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedAction = button.dataset.authAction || "login";
+    });
+  });
+
   function openModal() {
     modal.classList.remove("hidden");
     modal.setAttribute("aria-hidden", "false");
+    const emailInput = form.querySelector("input[name='email']");
+    if (emailInput) {
+      emailInput.focus();
+    }
   }
 
   function closeModal() {
@@ -24,38 +35,50 @@ function bindAuthModal() {
     el.addEventListener("click", closeModal);
   });
 
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const submitter = event.submitter;
-    const action = submitter ? submitter.dataset.authAction : "login";
     const data = new FormData(form);
     const email = String(data.get("email") || "").trim();
     const password = String(data.get("password") || "");
     const role = String(data.get("rolRegistro") || "ciudadano");
 
     if (!email || !password) {
-      window.VetWebAuth.setFeedback("Completa tu correo y contraseña.", true);
+      window.VetWebAuth.setFeedback("Completa tu correo y contrasena.", true);
       return;
     }
 
     try {
-      if (action === "register") {
+      if (selectedAction === "register") {
         await window.VetWebAuth.registerWithEmail(email, password, role);
-        window.VetWebAuth.setFeedback("Tu cuenta fue creada con éxito.");
+        window.VetWebAuth.setFeedback("Tu cuenta fue creada con exito.");
       } else {
         await window.VetWebAuth.loginWithEmail(email, password);
-        window.VetWebAuth.setFeedback("Bienvenido. Sesión iniciada.");
+        window.VetWebAuth.setFeedback("Sesion iniciada correctamente.");
       }
-    } catch (_error) {
-      window.VetWebAuth.setFeedback("No pudimos iniciar sesión. Verifica tus datos.", true);
+
+      const roleAfterAuth = await window.VetWebAuth.refreshCurrentRole();
+      const portalPath = window.VetWebAuth.getPortalPathByRole(roleAfterAuth);
+      const goPortalButton = document.getElementById("go-portal-button");
+      if (goPortalButton) {
+        goPortalButton.setAttribute("href", portalPath);
+      }
+      closeModal();
+    } catch (error) {
+      window.VetWebAuth.setFeedback(window.VetWebAuth.translateAuthError(error), true);
     }
   });
 
   if (logoutButton) {
     logoutButton.addEventListener("click", async () => {
       await window.VetWebAuth.logoutUser();
-      window.VetWebAuth.setFeedback("Sesión cerrada.");
+      window.VetWebAuth.setFeedback("Sesion cerrada.");
     });
   }
 }
@@ -89,6 +112,47 @@ function bindPublicCampaignList() {
     });
 }
 
+function bindPortalButton() {
+  const portalButton = document.getElementById("go-portal-button");
+  if (!portalButton || !window.VetWebAuth) {
+    return;
+  }
+
+  portalButton.addEventListener("click", async (event) => {
+    await window.VetWebAuth.whenReady();
+    const role = window.VetWebAuth.state.currentRole;
+    if (!window.VetWebAuth.state.user) {
+      event.preventDefault();
+      const openButton = document.getElementById("open-auth-modal");
+      if (openButton) {
+        openButton.click();
+      }
+      return;
+    }
+
+    portalButton.setAttribute("href", window.VetWebAuth.getPortalPathByRole(role));
+  });
+}
+
+function bindAuthAwareActions() {
+  if (!window.VetWebAuth) {
+    return;
+  }
+
+  window.VetWebAuth.onAuthChanged((state) => {
+    const portalButton = document.getElementById("go-portal-button");
+    if (portalButton && state.user) {
+      portalButton.setAttribute("href", window.VetWebAuth.getPortalPathByRole(state.currentRole));
+      portalButton.textContent = "Mi portal";
+    }
+
+    if (portalButton && !state.user) {
+      portalButton.setAttribute("href", "portal.html");
+      portalButton.textContent = "Portal";
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   if (window.VetWebAuth) {
     window.VetWebAuth.initFirebaseClient();
@@ -96,4 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   bindAuthModal();
   bindPublicCampaignList();
+  bindPortalButton();
+  bindAuthAwareActions();
 });
