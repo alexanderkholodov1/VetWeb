@@ -3,18 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Por un Amigo Fiel - Pillaro</title>
-    <meta
-      name="description"
-      content="Plataforma ciudadana para rescate animal, citas veterinarias, campañas y apoyo comunitario en Pillaro."
-    />
+    <title>Por un Amigo Fiel · Píllaro — Plataforma comunitaria de bienestar animal</title>
+    <meta name="description" content="Reporta abandono, agenda citas veterinarias, dona y apadrina en Píllaro, Tungurahua. Una red ciudadana que actúa rápido por cada amigo fiel." />
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <script defer src="/__/firebase/12.11.0/firebase-app-compat.js"></script>
     <script defer src="/__/firebase/12.11.0/firebase-auth-compat.js"></script>
@@ -24,118 +18,365 @@
     <script defer src="js/site.js"></script>
   </head>
   <body>
-    <header class="header">
-      <a href="index.html" class="logo-link">
-        <img src="assets/logo.svg" class="logo-icon" alt="Logo" />
-        <span>Por un Amigo Fiel</span>
-      </a>
-      <nav class="main-nav" aria-label="Navegacion principal">
-        <a href="index.html" class="active">Inicio</a>
-        <a href="eventos.html">Eventos</a>
-        <a href="veterinarios.html">Veterinarios</a>
-        <a href="citas.html">Agendar cita</a>
-        <a href="reportes.html">Reportar caso</a>
-        <a href="donaciones.html">Donar</a>
-      </nav>
-      <div class="header-actions">
-        <a id="go-portal-button" href="portal.html" class="btn btn-soft">Portal</a>
-        <a href="staff.html" class="btn btn-soft">Staff</a>
-        <button id="open-auth-modal" class="btn btn-primary" type="button">Ingresar</button>
+    <!-- ============================== HEADER ============================== -->
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/logo.svg" alt="" />
+          <span>Por un Amigo Fiel</span>
+        </a>
+        <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-label="Abrir menú">☰</button>
+        <nav class="main-nav" aria-label="Navegación principal">
+          <a href="index.html" class="active">Inicio</a>
+          <a href="eventos.html">Eventos</a>
+          <a href="veterinarios.html">Veterinarios</a>
+          <a href="citas.html">Agendar cita</a>
+          <a href="reportes.html">Reportar caso</a>
+          <a href="donaciones.html">Donar</a>
+        </nav>
+        <div class="header-actions">
+          <span id="session-badge" class="session-badge">Sin sesión</span>
+          <a id="go-portal-button" href="portal.html" class="btn btn-ghost btn-sm">Portal</a>
+          <button id="open-auth-modal" class="btn btn-primary btn-sm" type="button">Ingresar</button>
+        </div>
       </div>
     </header>
 
     <main>
-      <section class="hero hero-home">
-        <div>
-          <p class="kicker">PILLARO - TUNGURAHUA</p>
-          <h1>Un lugar seguro para cada amigo fiel.</h1>
-          <p class="hero-text">
-            Conecta con campañas, agenda citas para tu mascota, reporta casos de abandono y apoya a la fundación con
-            donaciones o apadrinamiento.
-          </p>
-          <div class="hero-actions-row">
-            <a href="reportes.html" class="btn btn-primary">Reportar abandono</a>
-            <a href="citas.html" class="btn btn-soft">Agendar cita</a>
+      <!-- ============================== HERO ============================== -->
+      <section class="hero container">
+        <div class="hero-grid">
+          <div data-animate>
+            <span class="kicker">Píllaro · Tungurahua</span>
+            <h1>Una red ciudadana <em>por cada amigo fiel</em>.</h1>
+            <p class="hero-text">
+              Conecta con campañas de salud animal, agenda atención veterinaria, reporta casos de abandono
+              y apoya con una donación o un apadrinamiento mensual. Todo en un solo lugar, abierto a la comunidad.
+            </p>
+            <div class="hero-actions">
+              <a href="reportes.html" class="btn btn-primary btn-lg">🚑 Reportar abandono</a>
+              <a href="citas.html" class="btn btn-ghost btn-lg">🩺 Agendar cita</a>
+            </div>
+            <div class="hero-meta">
+              <div><strong>+850</strong><span>animales atendidos</span></div>
+              <div><strong>120</strong><span>familias adoptantes</span></div>
+              <div><strong>30</strong><span>jornadas comunitarias</span></div>
+            </div>
+          </div>
+
+          <div class="hero-visual" data-animate data-animate-delay="2" aria-hidden="true">
+            <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1000&auto=format&fit=crop&q=70"
+                 alt="Perro mirando al horizonte"
+                 onerror="this.style.display='none'" />
+            <div class="badge-floating badge-top">
+              <span class="dot">🐾</span>
+              <div>
+                <small>Próxima jornada</small>
+                <strong>Esterilización · Sáb 6 abr</strong>
+              </div>
+            </div>
+            <div class="badge-floating badge-bot">
+              <span class="dot" style="background:#ffd9da; color:#8b1c2a">❤</span>
+              <div>
+                <small>Casos resueltos en 2025</small>
+                <strong>+217 reportes atendidos</strong>
+              </div>
+            </div>
           </div>
         </div>
-        <aside class="hero-highlight">
-          <h2>Próximo gran evento</h2>
-          <p class="highlight-title">PERRÓTON SOLIDARIA 2.5K</p>
-          <p>Domingo 30 de marzo · Parque Central de Pillaro · Desde las 08:00</p>
-          <a href="eventos.html" class="btn btn-secondary">Ver agenda completa</a>
-        </aside>
       </section>
 
-      <section class="section-block">
-        <h2 class="section-title">Servicios para la comunidad</h2>
-        <div class="cards-3">
-          <article class="feature-card">
+      <!-- ============================== STATS ============================== -->
+      <section class="container section-tight">
+        <div class="stats" data-animate>
+          <div class="stat"><strong>+850</strong><span>Animales con atención este año</span></div>
+          <div class="stat"><strong>120</strong><span>Familias adoptantes registradas</span></div>
+          <div class="stat"><strong>30</strong><span>Campañas comunitarias</span></div>
+          <div class="stat"><strong>$14k</strong><span>Recaudados en donaciones 2025</span></div>
+        </div>
+      </section>
+
+      <!-- ============================== SERVICIOS ============================== -->
+      <section class="container">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Lo que puedes hacer</span>
+          <h2>Servicios diseñados para la comunidad</h2>
+          <p>Desde un reporte rápido en la calle hasta el seguimiento mensual de un caso. Cada función está pensada para responder con velocidad y transparencia.</p>
+        </div>
+
+        <div class="grid-4">
+          <article class="card-feature" data-reveal>
+            <div class="card-icon"><span class="icon-emoji">🩺</span></div>
             <h3>Atención veterinaria</h3>
             <p>Agenda en línea, historial de vacunas y recordatorios para tu mascota.</p>
-            <a href="citas.html">Entrar al módulo</a>
+            <a href="citas.html" class="read-more">Agendar cita</a>
           </article>
-          <article class="feature-card">
+
+          <article class="card-feature tone-rose" data-reveal>
+            <div class="card-icon"><span class="icon-emoji">🚑</span></div>
             <h3>Rescate y reportes</h3>
-            <p>Envía reportes con foto y ubicación para actuar rápido en casos de abandono.</p>
-            <a href="reportes.html">Reportar ahora</a>
+            <p>Envía un caso con foto y ubicación; el equipo prioriza y responde rápido.</p>
+            <a href="reportes.html" class="read-more">Reportar ahora</a>
           </article>
-          <article class="feature-card">
-            <h3>Donar y apadrinar</h3>
-            <p>Apoya con recursos para alimento, medicina y cuidado de animales rescatados.</p>
-            <a href="donaciones.html">Contribuir</a>
+
+          <article class="card-feature tone-amber" data-reveal>
+            <div class="card-icon"><span class="icon-emoji">💛</span></div>
+            <h3>Donar</h3>
+            <p>Tu aporte se convierte en alimento, medicina y rescates concretos.</p>
+            <a href="donaciones.html" class="read-more">Aportar</a>
+          </article>
+
+          <article class="card-feature tone-teal" data-reveal>
+            <div class="card-icon"><span class="icon-emoji">🐾</span></div>
+            <h3>Apadrinar</h3>
+            <p>Acompaña un caso mensualmente y sigue su recuperación de cerca.</p>
+            <a href="apadrinamiento.html" class="read-more">Apadrinar</a>
           </article>
         </div>
       </section>
 
-      <section class="section-block section-banner">
-        <div>
-          <h2>Campañas destacadas</h2>
-          <p>Esterilización, desparasitación y educación responsable para barrios de Pillaro.</p>
+      <!-- ============================== HOW IT WORKS ============================== -->
+      <section class="container">
+        <div class="split">
+          <div data-reveal>
+            <span class="eyebrow">Cómo funciona</span>
+            <h2>Reporta en menos de un minuto. El equipo actúa.</h2>
+            <p class="muted">Tres pasos simples para que un caso urgente llegue al equipo correcto. Si la situación es grave, el reporte queda visible para voluntarios y veterinarios disponibles en Píllaro.</p>
+            <ol class="form-stack" style="list-style: none; padding: 0; counter-reset: step;">
+              <li class="card" style="padding: 1rem 1.2rem;">
+                <strong style="font-family: var(--font-display); font-size: 1.1rem;">1 · Crea tu cuenta</strong>
+                <p class="muted" style="margin: 0.2rem 0 0;">Selecciona si eres ciudadano, dueño, voluntario o donante.</p>
+              </li>
+              <li class="card" style="padding: 1rem 1.2rem;">
+                <strong style="font-family: var(--font-display); font-size: 1.1rem;">2 · Describe y comparte ubicación</strong>
+                <p class="muted" style="margin: 0.2rem 0 0;">Una foto y coordenadas son suficientes para activar al equipo.</p>
+              </li>
+              <li class="card" style="padding: 1rem 1.2rem;">
+                <strong style="font-family: var(--font-display); font-size: 1.1rem;">3 · Da seguimiento</strong>
+                <p class="muted" style="margin: 0.2rem 0 0;">Recibe el estado del caso desde tu portal de cuenta.</p>
+              </li>
+            </ol>
+          </div>
+
+          <div class="split-image" data-reveal data-animate-delay="2">
+            <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=900&auto=format&fit=crop&q=70"
+                 alt="Veterinaria atendiendo a un animal"
+                 onerror="this.style.display='none'" />
+          </div>
         </div>
-        <ul class="campaign-list" id="campaign-home-list">
+      </section>
+
+      <!-- ============================== CAMPAÑAS ============================== -->
+      <section class="container">
+        <div class="between" data-reveal>
+          <div>
+            <span class="eyebrow">Calendario activo</span>
+            <h2>Campañas y eventos próximos</h2>
+          </div>
+          <a href="eventos.html" class="btn btn-ghost btn-sm">Ver todos →</a>
+        </div>
+
+        <ul class="campaign-list section-gap-top" id="campaign-home-list">
           <li>
-            <strong>Jornada de esterilización gratuita</strong>
-            <span>Sector La Esperanza · Cupos limitados</span>
+            <div class="date">06<small>ABR</small></div>
+            <div>
+              <strong>Jornada masiva de esterilización</strong>
+              <span>Coliseo Municipal · Cupos limitados con registro previo</span>
+            </div>
+            <a class="btn btn-soft btn-sm" href="eventos.html">Ver</a>
           </li>
           <li>
-            <strong>Campaña de vacunación antirrábica</strong>
-            <span>Sector San Miguel · Atención todo el día</span>
+            <div class="date">10<small>ABR</small></div>
+            <div>
+              <strong>Vacunación antirrábica gratuita</strong>
+              <span>Sector San Miguel · Atención todo el día</span>
+            </div>
+            <a class="btn btn-soft btn-sm" href="eventos.html">Ver</a>
           </li>
           <li>
-            <strong>Taller de adopción responsable</strong>
-            <span>Casa Comunal · Entrada libre</span>
+            <div class="date">14<small>ABR</small></div>
+            <div>
+              <strong>Feria de adopción responsable</strong>
+              <span>Plaza Cívica · Conoce casos rescatados</span>
+            </div>
+            <a class="btn btn-soft btn-sm" href="eventos.html">Ver</a>
+          </li>
+          <li>
+            <div class="date">28<small>ABR</small></div>
+            <div>
+              <strong>Taller para familias y niños</strong>
+              <span>Casa Comunal · Tenencia responsable y prevención</span>
+            </div>
+            <a class="btn btn-soft btn-sm" href="eventos.html">Ver</a>
           </li>
         </ul>
       </section>
+
+      <!-- ============================== EQUIPO ============================== -->
+      <section class="container">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Equipo profesional</span>
+          <h2>Veterinarios y voluntarios al servicio de Píllaro</h2>
+          <p>Un grupo de profesionales y vecinos que sostienen las campañas y la atención del día a día.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="profile-card" data-reveal>
+            <img class="profile-photo" src="https://i.pravatar.cc/640?img=12" alt="Dra. Andrea Paredes" />
+            <span class="tag">Medicina preventiva</span>
+            <h3>Dra. Andrea Paredes</h3>
+            <p class="muted">Lunes a jueves · 08:00 – 14:00</p>
+          </article>
+          <article class="profile-card" data-reveal data-animate-delay="1">
+            <img class="profile-photo" src="https://i.pravatar.cc/640?img=31" alt="Dr. Luis Mena" />
+            <span class="tag tone-orange">Cirugía y esterilización</span>
+            <h3>Dr. Luis Mena</h3>
+            <p class="muted">Martes a viernes · 10:00 – 17:00</p>
+          </article>
+          <article class="profile-card" data-reveal data-animate-delay="2">
+            <img class="profile-photo" src="https://i.pravatar.cc/640?img=47" alt="Dra. Karina Salazar" />
+            <span class="tag tone-amber">Urgencias y rescate</span>
+            <h3>Dra. Karina Salazar</h3>
+            <p class="muted">Sábados · 08:00 – 16:00</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ============================== TESTIMONIOS ============================== -->
+      <section class="container">
+        <div class="section-head center" data-reveal>
+          <span class="eyebrow">Voces de la comunidad</span>
+          <h2>Lo que dice nuestra gente</h2>
+        </div>
+        <div class="grid-3">
+          <blockquote class="testimonial" data-reveal>
+            Reporté un caso desde mi celular y al día siguiente ya estaban atendiendo al cachorro. Una respuesta increíble.
+            <cite>— María Cevallos, vecina de La Esperanza</cite>
+          </blockquote>
+          <blockquote class="testimonial" data-reveal data-animate-delay="1">
+            Llevo dos meses apadrinando a "Luna". Recibo fotos y avances. Vale cada centavo.
+            <cite>— Diego Pazmiño, donante mensual</cite>
+          </blockquote>
+          <blockquote class="testimonial" data-reveal data-animate-delay="2">
+            Como voluntaria, tener todo organizado en un panel cambió cómo coordinamos las jornadas.
+            <cite>— Ana Lucía, voluntaria</cite>
+          </blockquote>
+        </div>
+      </section>
+
+      <!-- ============================== CTA ============================== -->
+      <section class="container">
+        <div class="cta-banner" data-reveal>
+          <div>
+            <span class="eyebrow" style="color:#ffd9b6">Súmate hoy</span>
+            <h2>Una donación pequeña, un cambio enorme.</h2>
+            <p>Por $5 mensuales puedes cubrir la alimentación de un caso rescatado durante una semana. Tu aporte es transparente y trazable.</p>
+            <div class="row">
+              <a href="donaciones.html" class="btn btn-primary btn-lg">Donar ahora</a>
+              <a href="apadrinamiento.html" class="btn btn-ghost btn-lg" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,255,255,0.25)">Apadrinar un caso</a>
+            </div>
+          </div>
+          <div style="font-size: 6rem; text-align: center; line-height: 1;">🐶</div>
+        </div>
+      </section>
+
+      <!-- ============================== FAQ rápida ============================== -->
+      <section class="container">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Preguntas frecuentes</span>
+          <h2>Antes de empezar</h2>
+        </div>
+        <div class="grid-2">
+          <details class="card" data-reveal>
+            <summary style="font-weight:700; cursor:pointer;">¿Necesito una cuenta para reportar abandono?</summary>
+            <p class="muted" style="margin-top:0.6rem;">Sí. Crear una cuenta toma menos de un minuto y nos permite contactarte si hace falta más información.</p>
+          </details>
+          <details class="card" data-reveal>
+            <summary style="font-weight:700; cursor:pointer;">¿Las donaciones son seguras?</summary>
+            <p class="muted" style="margin-top:0.6rem;">Sí. Procesamos los pagos a través de pasarelas con cifrado de extremo a extremo y registramos cada transacción para que sea trazable.</p>
+          </details>
+          <details class="card" data-reveal>
+            <summary style="font-weight:700; cursor:pointer;">¿Cómo me convierto en voluntario?</summary>
+            <p class="muted" style="margin-top:0.6rem;">Crea tu cuenta seleccionando "Voluntario". Coordinaremos contigo turnos y campañas a través del portal.</p>
+          </details>
+          <details class="card" data-reveal>
+            <summary style="font-weight:700; cursor:pointer;">¿Puedo apadrinar a un animal específico?</summary>
+            <p class="muted" style="margin-top:0.6rem;">Sí. En la página de apadrinamiento puedes ingresar el ID del animal que viste en eventos o redes para vincular tu aporte.</p>
+          </details>
+        </div>
+      </section>
     </main>
 
-    <footer class="footer">
-      <p>Por un Amigo Fiel - Pillaro · Plataforma comunitaria de bienestar animal</p>
-      <p>
-        Facebook:
-        <a href="https://www.facebook.com/porunamigofielpillaro/?locale=es_LA" target="_blank" rel="noreferrer">
-          porunamigofielpillaro
-        </a>
-      </p>
+    <!-- ============================== FOOTER ============================== -->
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <div>
+          <div class="footer-brand">
+            <img src="assets/logo.svg" alt="" />
+            Por un Amigo Fiel
+          </div>
+          <p style="color: rgba(255,255,255,0.65); max-width: 32ch;">Plataforma comunitaria para el bienestar animal en Píllaro, Tungurahua.</p>
+        </div>
+        <div>
+          <h4>Plataforma</h4>
+          <a href="eventos.html">Eventos</a>
+          <a href="citas.html">Agendar cita</a>
+          <a href="reportes.html">Reportar caso</a>
+          <a href="donaciones.html">Donar</a>
+        </div>
+        <div>
+          <h4>Cuentas</h4>
+          <a href="portal.html">Portal cliente</a>
+          <a href="staff.html">Portal staff</a>
+          <a href="admin.html">Panel admin</a>
+        </div>
+        <div>
+          <h4>Contacto</h4>
+          <a href="https://www.facebook.com/porunamigofielpillaro/?locale=es_LA" target="_blank" rel="noreferrer">Facebook</a>
+          <a href="mailto:hola@porunamigofiel.ec">hola@porunamigofiel.ec</a>
+          <a href="https://maps.google.com/?q=Pillaro" target="_blank" rel="noreferrer">Píllaro, Tungurahua</a>
+        </div>
+      </div>
+      <div class="site-footer-bottom">
+        <span>© 2026 Por un Amigo Fiel · Píllaro</span>
+        <span>Hecho con ❤ por la comunidad</span>
+      </div>
     </footer>
 
+    <!-- ============================== AUTH MODAL ============================== -->
     <div id="auth-modal" class="modal hidden" aria-hidden="true">
       <div class="modal-backdrop" data-close-modal="true"></div>
       <section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
         <button type="button" class="modal-close" data-close-modal="true" aria-label="Cerrar">×</button>
-        <h2 id="auth-modal-title">Ingresar a tu cuenta</h2>
-        <p class="muted">Si aún no tienes cuenta, puedes crearla aquí mismo.</p>
+        <h2 id="auth-modal-title">Ingresa a tu cuenta</h2>
+        <p id="auth-modal-subtitle" class="muted" style="margin-bottom:1rem;">Bienvenido de nuevo. Continúa donde lo dejaste.</p>
         <form id="auth-form" class="form-stack">
+          <div class="auth-mode-row">
+            <button type="button" data-auth-mode="login" class="btn btn-soft">Ya tengo cuenta</button>
+            <button type="button" data-auth-mode="register" class="btn btn-soft">Crear cuenta</button>
+          </div>
           <label>
             Correo electrónico
-            <input type="email" name="email" required />
+            <input type="email" name="email" placeholder="tucorreo@ejemplo.com" required />
           </label>
           <label>
             Contraseña
-            <input type="password" name="password" minlength="6" required />
+            <input type="password" name="password" minlength="6" placeholder="Mínimo 6 caracteres" required />
           </label>
-          <div class="row-buttons auth-mode-row"><button type="button" data-auth-mode="login" class="btn btn-soft">Ya tengo cuenta</button><button type="button" data-auth-mode="register" class="btn btn-soft">Crear cuenta</button></div><button type="submit" id="auth-submit-button" class="btn btn-primary full">Ingresar</button>
-          <button id="logout-button" type="button" class="btn btn-ghost full">Cerrar sesión</button>
+          <div id="role-picker" class="role-picker form-stack">
+            <label>
+              Tipo de cuenta
+              <select name="rol">
+                <option value="dueno">Dueño de mascota</option>
+                <option value="ciudadano">Ciudadano (reportar/donar)</option>
+                <option value="voluntario">Voluntario</option>
+                <option value="donante">Donante</option>
+              </select>
+            </label>
+            <p class="muted" style="font-size:0.85rem; margin:0;">Las cuentas de veterinario y administrador las asigna el equipo.</p>
+          </div>
+          <button type="submit" id="auth-submit-button" class="btn btn-primary full">Ingresar</button>
+          <button id="logout-button" type="button" class="btn btn-ghost full" data-auth-show="in">Cerrar sesión</button>
           <p id="auth-feedback" class="feedback"></p>
         </form>
       </section>

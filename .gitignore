@@ -68,5 +68,8 @@ node_modules/
 # Firebase service account keys
 *firebase-adminsdk*.json
 
+# Private folder (service accounts, API keys, secrets)
+private/
+
 # dataconnect generated files
 .dataconnect
