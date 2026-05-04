@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Por un Amigo Fiel - Favicon">
-	<rect width="120" height="120" rx="24" fill="#FFF8EF" />
-	<g transform="translate(12, 12) scale(0.8)">
-		<path d="M 60 112 C 60 112 12 90 12 45 V 20 L 60 6 L 108 20 V 45 C 108 90 60 112 60 112 Z" fill="#0F766E" />
-		<path d="M 60 92 C 60 92 28 65 28 42 C 28 25 48 20 60 38 C 72 20 92 25 92 42 C 92 65 60 92 60 92 Z" fill="#ED5C21" />
-		<path d="M 53 41 h 14 v 12 h 12 v 14 h -12 v 12 h -14 v -12 h -12 v -14 h 12 z" fill="#FFF8EF" />
-	</g>
-</svg>

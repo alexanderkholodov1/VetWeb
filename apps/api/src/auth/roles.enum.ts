@@ -1,0 +1,8 @@
+export enum AppRole {
+  CITIZEN = "CITIZEN",
+  OWNER = "OWNER",
+  VOLUNTEER = "VOLUNTEER",
+  DONOR = "DONOR",
+  VETERINARIAN = "VETERINARIAN",
+  ADMIN = "ADMIN"
+}

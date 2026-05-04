@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vetweb-postgres
+    environment:
+      POSTGRES_DB: vetweb
+      POSTGRES_USER: vetweb
+      POSTGRES_PASSWORD: vetweb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vetweb -d vetweb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: vetweb-api
+    environment:
+      DATABASE_URL: postgresql://vetweb:vetweb@postgres:5432/vetweb?schema=public
+      JWT_SECRET: change-me
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: vetweb-web
+    depends_on:
+      - api
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres_data:

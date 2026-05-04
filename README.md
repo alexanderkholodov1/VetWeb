@@ -1,98 +1,117 @@
-# VetWeb - Plataforma Veterinaria y Rescate
+# VetWeb - Plataforma Veterinaria
 
-Proyecto web para POR UN AMIGO FIEL - PILLARO, desplegado en Firebase.
+VetWeb quedó consolidado sobre una sola base: monorepo con frontend React, backend NestJS, PostgreSQL, Prisma y Docker Compose. La superficie Firebase anterior fue retirada del flujo principal para que el repositorio responda a una arquitectura única, mantenible y desplegable.
 
-URL actual:
-- https://vetweb-ec.web.app
+## Stack actual
 
-## Stack
+- Frontend: React 19 + TypeScript + Vite en `apps/web`
+- Backend: NestJS + TypeScript en `apps/api`
+- Base de datos: PostgreSQL 16
+- ORM: Prisma
+- Auth: JWT con registro/login propio
+- Infra local: Docker Compose
 
-- Frontend estatico: HTML, CSS, JavaScript en public
-- Backend API: Firebase Cloud Functions v2 + Express en functions
-- Base de datos: Firestore
-- Auth: Firebase Authentication
-- CI/CD Hosting: GitHub Actions
+## Arquitectura
 
-## Configuracion Firebase (unificada)
+- `apps/web`: SPA React con rutas para sitio público, portal cliente, portal staff y panel admin
+- `apps/api`: API modular NestJS con dominios `auth`, `users`, `rescue`, `veterinary`, `donations`, `community` y `admin`
+- `apps/api/prisma/schema.prisma`: modelo relacional central
+- `docker-compose.yml`: orquestación de `postgres`, `api` y `web`
 
-- Archivo unico de configuracion: firebase.json (en la raiz)
-- Ese archivo contiene:
-	- Hosting (public)
-	- Functions (source: functions)
-	- Firestore rules (functions/firestore.rules)
-	- Emulators
+## Modelo funcional migrado
 
-Nota:
-- Ya no se usa functions/firebase.json ni deploy-functions.sh.
+Esta reescritura contempla el mismo alcance funcional alto de la versión anterior:
 
-## Documentacion completa
+- Rescate y reportes de abandono
+- Gestión de mascotas
+- Citas veterinarias y agenda
+- Historial médico
+- Campañas comunitarias e inscripciones
+- Donaciones y apadrinamientos
+- Inventario básico de suministros
+- Roles: `CITIZEN`, `OWNER`, `VOLUNTEER`, `DONOR`, `VETERINARIAN`, `ADMIN`
 
-- Documento principal para Notion: docs/NOTION_VETWEB_DOCUMENTACION.md
-- Checklist de entrega: docs/CHECKLIST_ENTREGA.md
-- Guia para importar en Notion: docs/GUIA_NOTION.md
+## Arranque local con Docker
 
-## Requisitos
+1. Copia `.env.example` a `.env` si quieres cambiar variables.
+2. Ejecuta:
 
-- Node.js 20
-- Firebase CLI (npm i -g firebase-tools)
-- Proyecto Firebase vetweb-917b9
-
-## Frontend
-
-Archivos principales:
-- public/index.html
-- public/styles.css
-- public/eventos.html
-- public/veterinarios.html
-- public/citas.html
-- public/reportes.html
-- public/donaciones.html
-- public/apadrinamiento.html
-- public/admin.html
-- public/js/firebase-client.js
-- public/js/site.js
-- public/js/forms.js
-
-Deploy manual Hosting:
-
-firebase deploy --only hosting --project vetweb-917b9
-
-## Backend
-
-Instalacion:
-
-cd functions
+```bash
 npm install
+docker compose up --build
+```
 
-Build:
+Servicios esperados:
 
+- Web: http://localhost:5173
+- API: http://localhost:3000/api
+- Swagger: http://localhost:3000/docs
+- PostgreSQL: localhost:5432
+
+Credenciales demo cargadas por seed:
+
+- Admin: `admin@vetweb.local` / `Admin12345!`
+- Dueño: `owner@vetweb.local` / `VetWeb123!`
+- Veterinaria: `vet@vetweb.local` / `VetWeb123!`
+- Ciudadano: `citizen@vetweb.local` / `VetWeb123!`
+- Voluntaria: `volunteer@vetweb.local` / `VetWeb123!`
+- Donante: `donor@vetweb.local` / `VetWeb123!`
+
+Datos demo incluidos:
+
+- 2 mascotas (`Luna`, `Simba`)
+- 2 citas
+- 1 historial medico
+- 1 campana comunitaria con 2 inscripciones
+- 1 reporte de rescate
+- 1 donacion
+- 1 apadrinamiento
+- 2 suministros de inventario
+
+## Arranque local sin Docker
+
+1. Levanta PostgreSQL localmente.
+2. Usa el `DATABASE_URL` de `.env.example` o uno equivalente.
+3. Ejecuta:
+
+```bash
+npm install
+npm run db:generate
+npm run db:push
+npm run db:seed
+npm run dev
+```
+
+## Scripts principales
+
+```bash
+npm run dev
 npm run build
+npm run db:generate
+npm run db:push
+npm run db:seed
+npm run docker:up
+npm run docker:down
+```
 
-Deploy functions:
+## Login
 
-firebase deploy --only functions --project vetweb-917b9
+- Desde la UI, usa el modal de autenticacion y cualquiera de las credenciales demo.
+- Contra API directa, el login se hace en `POST /api/auth/login` con `email` y `password`.
 
-Deploy reglas de Firestore:
+## Funcionalidades implementadas
 
-firebase deploy --only firestore:rules --project vetweb-917b9
+- Registro y login con JWT para roles auto-registrables
+- Consulta publica de campanas y veterinarios disponibles
+- Alta y consulta de mascotas para propietario y admin
+- Creacion de citas para mascotas del usuario autenticado
+- Agenda para veterinaria y admin
+- Creacion de historial medico para veterinaria y admin
+- Reportes de rescate para ciudadano, voluntariado y admin
+- Donaciones y apadrinamientos para donante y admin
+- Metricas, usuarios e inventario para admin
 
-## Roles
+## Estado del repositorio
 
-Roles del sistema:
-- ciudadano
-- dueno
-- voluntario
-- donante
-- veterinario
-- administrador
-
-Reglas por rol definidas en:
-- functions/firestore.rules
-
-## Seguridad
-
-- Se ignoran llaves de service account en git con la regla:
-	- *firebase-adminsdk*.json
-
-Recomendacion:
-- Rotar cualquier service account key que haya sido compartida fuera de un canal seguro.
+- La implementacion activa vive en `apps/api` y `apps/web`.
+- El repositorio ya no depende de Firebase, Firestore ni Cloud Functions para operar localmente.

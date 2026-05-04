@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CITIZEN
+  OWNER
+  VOLUNTEER
+  DONOR
+  VETERINARIAN
+  ADMIN
+}
+
+enum RescueStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+}
+
+enum AppointmentStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELED
+}
+
+enum DonationKind {
+  ONE_TIME
+  MONTHLY
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  passwordHash          String
+  fullName              String
+  phone                 String?
+  sector                String?
+  avatarUrl             String?
+  favoriteVeterinarianId String?
+  role                  Role                   @default(OWNER)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  pets                  Pet[]
+  rescueReports         RescueReport[]
+  appointments          Appointment[]          @relation("AppointmentOwner")
+  medicalRecords        MedicalRecord[]        @relation("MedicalRecordVet")
+  donations             Donation[]
+  sponsorships          Sponsorship[]
+  campaigns             Campaign[]             @relation("CampaignCreatedBy")
+  campaignRegistrations CampaignRegistration[]
+  veterinarianProfile   VeterinarianProfile?
+}
+
+model VeterinarianProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  specialty   String
+  biography   String?
+  schedule    String?
+  isAvailable Boolean  @default(true)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Pet {
+  id          String          @id @default(cuid())
+  name        String
+  species     String
+  breed       String?
+  age         Int?
+  notes       String?
+  ownerId     String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  owner       User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  medicalRecords MedicalRecord[]
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  petId          String
+  ownerId        String
+  veterinarianId String?
+  scheduledAt    DateTime
+  reason         String
+  status         AppointmentStatus @default(REQUESTED)
+  notes          String?
+  pet            Pet               @relation(fields: [petId], references: [id], onDelete: Cascade)
+  owner          User              @relation("AppointmentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model MedicalRecord {
+  id             String   @id @default(cuid())
+  petId           String
+  veterinarianId  String
+  diagnosis       String
+  treatment       String
+  createdAt       DateTime @default(now())
+  pet             Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  veterinarian    User     @relation("MedicalRecordVet", fields: [veterinarianId], references: [id], onDelete: Cascade)
+}
+
+model RescueReport {
+  id          String       @id @default(cuid())
+  description String
+  photoUrl    String?
+  latitude    Float
+  longitude   Float
+  status      RescueStatus @default(OPEN)
+  reporterId  String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  reporter    User         @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+}
+
+model Campaign {
+  id            String                 @id @default(cuid())
+  title         String
+  description   String
+  location      String
+  startsAt      DateTime
+  endsAt        DateTime
+  createdById   String
+  createdAt     DateTime               @default(now())
+  createdBy     User                   @relation("CampaignCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  registrations CampaignRegistration[]
+}
+
+model CampaignRegistration {
+  id         String   @id @default(cuid())
+  campaignId String
+  userId     String
+  createdAt  DateTime @default(now())
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, userId])
+}
+
+model Donation {
+  id         String       @id @default(cuid())
+  donorId    String
+  amount     Decimal      @db.Decimal(10, 2)
+  kind       DonationKind @default(ONE_TIME)
+  message    String?
+  createdAt  DateTime     @default(now())
+  donor      User         @relation(fields: [donorId], references: [id], onDelete: Cascade)
+}
+
+model Sponsorship {
+  id          String   @id @default(cuid())
+  sponsorId   String
+  animalName  String
+  monthlyFee  Decimal  @db.Decimal(10, 2)
+  notes       String?
+  createdAt   DateTime @default(now())
+  sponsor     User     @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+}
+
+model Supply {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  stock     Int
+  unit      String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
